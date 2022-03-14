@@ -1,12 +1,17 @@
+from datetime import datetime
 from enum import Enum
+from typing import List,Optional
 
+from pydantic import Field
 from pydantic.main import BaseModel
-from pydantic.networks import EmailStr
+from pydantic import EmailStr, IPvAnyAddress
+
 
 
 class UserRegister(BaseModel):
-    email : EmailStr = None
-    pw:str = None
+    # pip install 'pydantic[email]'
+    email : str= None
+    pw : str = None
 
 class SnsType (str,Enum):
     email : str = "email"

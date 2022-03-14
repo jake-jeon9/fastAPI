@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from app.database.conn import db
 from app.common.config import conf
 from app.routes import index, auth
-
+from app.common.consts import DEV_URL,DEV_PORT
 
 def create_app():
     """
@@ -25,10 +25,11 @@ def create_app():
 
     # 라우터 정의
     app.include_router(index.router)
+    app.include_router(auth.router,tags=["Authentication"],prefix="/auth")
     return app
 
 
 app = create_app()
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+    uvicorn.run("main:app", host=DEV_URL, port=DEV_PORT, reload=True)
