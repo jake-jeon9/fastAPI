@@ -14,6 +14,7 @@ class Config:
     DB_ECHO: bool = True # echp 설정을 통해 디버깅
     DEBUG : bool = False
     TEST_MODE : bool = False
+    
     DB_URL : str = environ.get("DB_URL","mysql+pymysql://fastapi:user1234@localhost:3306/docker?charset=utf8mb4")
 
 
