@@ -6,14 +6,14 @@ from pydantic import Field
 from pydantic.main import BaseModel
 from pydantic import EmailStr, IPvAnyAddress
 
-
+# pydamtic 은 객체화 해서 사 json 형태로 사용, docs
 
 class UserRegister(BaseModel):
     # pip install 'pydantic[email]'
     email : str= None
     pw : str = None
 
-class SnsType (str,Enum):
+class SnsType (str,Enum): #Enum 은 1개만 선택
     email : str = "email"
     facebook : str = "facebook"
     google : str = "google"
