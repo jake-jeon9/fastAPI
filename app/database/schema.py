@@ -10,12 +10,12 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Session, relationship
 from app.database.conn import Base, db
-
+from sqlalchemy import text
 
 class BaseMixin:
-    ID = Column(Integer,primary_key = True,index = True)
-    created_at = Column(DateTime, nullable = False, default = func.utc_timestamp())
-    updated_at = Column(DateTime, nullable = False, default = func.utc_timestamp(),onupdate=func.utc_timestamp())
+    #ID = Column(Integer,primary_key = True,index = True)
+    ins_date = Column(DateTime, nullable = False, default = func.utc_timestamp())
+    upt_date = Column(DateTime, nullable = False, default = func.utc_timestamp(),onupdate=func.utc_timestamp())
 
     def __init__(self):
         self._q = None
@@ -23,7 +23,7 @@ class BaseMixin:
         self.served = None
 
     def all_columns(self):
-        return [c for c in self.__table__.columns if c.primary_key is False and c.name != "created_at"]
+        return [c for c in self.__table__.columns if c.primary_key is True and c.name != "ins_date"]
 
     def __hash__(self):
         return hash(self.id)
@@ -41,9 +41,11 @@ class BaseMixin:
         :param kwargs:
         :return:
         """
+
         obj = cls()
         for col in obj.all_columns():
             col_name = col.name
+            print("colName : "+col_name)
             if col_name in kwargs:
                 setattr(obj,col_name,kwargs.get(col_name))
         session.add(obj)
@@ -63,7 +65,7 @@ class BaseMixin:
         query = session.query(cls)
         for key, val in kwargs.items():
             col = getattr(cls,key)
-            query = query.fillter(col == val)
+            query = query.filter(col == val)
 
         if query.count() > 1:
             raise Exception("Only one row is supposed to be returned, but got more than one.")
@@ -71,6 +73,13 @@ class BaseMixin:
         if not session:
             session.close()
         return result
+
+    @classmethod
+    def getCount(cls,session :Session = None, **kwargs):
+        session = next(db.session()) if not session else session
+        #query = session.query(cls)
+        count = session.execute(text("select count(*) from docker.`user`"))
+        return count.first()
 
     @classmethod
     def filter(cls, session: Session = None, **kwargs):
@@ -106,11 +115,13 @@ class BaseMixin:
 
 
 class Users(Base,BaseMixin):
+    print("테이블 진입")
     __tablename__ = "user"
+    ID = Column(String(length=255),primary_key=True)
     status = Column(Enum("active", "deleted", "blocked"), default="active")
-    email = Column(String(length=255), nullable=True)
-    pw = Column(String(length=2000), nullable=True)
-    name = Column(String(length=255), nullable=True)
-    phone = Column(String(length=20), nullable=True, unique=True)
-    profile_img = Column(String(length=1000), nullable=True)
-    sns_type = Column(Enum("FB", "G", "K"), nullable=True)
+    email = Column(String(length=30), nullable=True)
+    pw = Column(String(length=200), nullable=True)
+    name = Column(String(length=20), nullable=True)
+    phone = Column(String(length=10), nullable=True, unique=True)
+    profile_img = Column(String(length=200), nullable=True)
+    sns_type = Column(Enum("facebook", "google", "kakao","email","None"),nullable=True)

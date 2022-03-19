@@ -19,6 +19,7 @@ class SnsType (str,Enum): #Enum 은 1개만 선택
     google : str = "google"
     kakao : str ="kakao"
     naver : str = "naver"
+    defalut : "None"
 
 
 class Token(BaseModel) :

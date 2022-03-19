@@ -39,14 +39,35 @@ async def register(sns_type : SnsType,reg_info : UserRegister,session : Session 
     :return:
     """
     if sns_type == SnsType.email :
-        is_exist = await is_email_exist(reg_info.email)
-        if not reg_info.email or reg_info.pw :
+        is_exist = is_email_exist(reg_info.email)
+        print("is_exist : "+str(is_exist))
+        print("email : "+reg_info.email)
+        print("pw : "+reg_info.pw)
+
+        # 입력값 검사
+        if not reg_info.email or not reg_info.pw :
             return JSONResponse(status_code=400,content=dict(msg="Email and pw must be provided"))
+
+        #유효성 검사
         if is_exist :
             return JSONResponse(status_code=400,content=dict(msg="EMAIL_EXIASTS"))
+
+        cnt = getCount()
+        strCnt = str(cnt)
+        strCnt = strCnt.replace("(","")
+        strCnt = strCnt.replace(",","")
+        strCnt = strCnt.replace(")","")
+        print(strCnt)
+        intCnt = int(strCnt)+1
+        #pw 헤시
         hash_pw = bcrypt.hashpw(reg_info.pw.encode("utf-8"),bcrypt.gensalt())
-        new_user = Users.create(session,auto_commit=True,pw=hash_pw,email=reg_info.email)
+
+        #생성
+        new_user = Users.create(session,auto_commit=True,pw=hash_pw,email=reg_info.email,ID=intCnt)
+
+        #토큰
         token = dict(Authorization = f"Bearer{create_access_token(date=UserToken.from_orm(new_user).dict(exclude={'pw'}),)}")
+        print("token :" +token)
         return token
     return JSONResponse(status_code=400,content=dict(mst="NOT_SUPPORTED"))
 
@@ -80,3 +101,8 @@ def create_access_token(*,data:dict=None,expires_delta:int = None):
         to_encode.update({"exp":datetime.utcnow() + timedelta(hours=expires_delta)})
         encoded_jwt = jwt.encode(to_encode,JWT_SECRET,algorithm = JWT_ALGORITHM)
         return encoded_jwt
+
+def getCount() :
+    count = Users.getCount()
+    print(str(count)+"<< ")
+    return count

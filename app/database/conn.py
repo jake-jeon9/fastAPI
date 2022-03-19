@@ -41,6 +41,7 @@ class SQLAlchemy:
         pool_recycle = kwargs.setdefault("DB_POOL_RECYCLE", 900)
         is_testing = kwargs.setdefault("TEST_MODE", False)
         echo = kwargs.setdefault("DB_ECHO", True)
+        print("url : "+database_url)
 
         self._engine = create_engine(
             database_url,
@@ -48,17 +49,18 @@ class SQLAlchemy:
             pool_recycle=pool_recycle,
             pool_pre_ping=True,
         )
-        if is_testing:  # create schema
-            db_url = self._engine.url
-            if db_url.host != "localhost":
-                raise Exception("db host must be 'localhost' in test environment")
-            except_schema_db_url = f"{db_url.drivername}://{db_url.username}@{db_url.host}"
-            schema_name = db_url.database
-            temp_engine = create_engine(except_schema_db_url, echo=echo, pool_recycle=pool_recycle, pool_pre_ping=True)
-            if _database_exist(temp_engine, schema_name):
-                _drop_database(temp_engine, schema_name)
-            _create_database(temp_engine, schema_name)
-            temp_engine.dispose()
+
+        # if is_testing:  # create schema
+        #     db_url = self._engine.url
+        #     if db_url.host != "localhost":
+        #         raise Exception("db host must be 'localhost' in test environment")
+        #     except_schema_db_url = f"{db_url.drivername}://{db_url.username}@{db_url.host}"
+        #     schema_name = db_url.database
+        #     temp_engine = create_engine(except_schema_db_url, echo=echo, pool_recycle=pool_recycle, pool_pre_ping=True)
+        #     if _database_exist(temp_engine, schema_name):
+        #         _drop_database(temp_engine, schema_name)
+        #     _create_database(temp_engine, schema_name)
+        #     temp_engine.dispose()
 
         self._session = sessionmaker(autocommit=False, autoflush=False, bind=self._engine)
 
