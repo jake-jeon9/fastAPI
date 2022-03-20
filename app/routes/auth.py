@@ -62,8 +62,12 @@ async def register(sns_type : SnsType,reg_info : UserRegister,session : Session 
         #pw 헤시
         hash_pw = bcrypt.hashpw(reg_info.pw.encode("utf-8"),bcrypt.gensalt())
 
+
+
+
         #생성
-        new_user = Users.create(session,auto_commit=True,pw=hash_pw,email=reg_info.email,ID=intCnt)
+        new_user = Users.create(session,auto_commit=True, pw=str(hash_pw), email=reg_info.email, ID=intCnt)
+
 
         #토큰
         token = dict(Authorization = f"Bearer{create_access_token(date=UserToken.from_orm(new_user).dict(exclude={'pw'}),)}")

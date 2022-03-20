@@ -10,7 +10,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Session, relationship
 from app.database.conn import Base, db
-from sqlalchemy import text
+from sqlalchemy import text,inspect
 
 class BaseMixin:
     #ID = Column(Integer,primary_key = True,index = True)
@@ -23,7 +23,7 @@ class BaseMixin:
         self.served = None
 
     def all_columns(self):
-        return [c for c in self.__table__.columns if c.primary_key is True and c.name != "ins_date"]
+        return inspect(self.__table__)
 
     def __hash__(self):
         return hash(self.id)
@@ -43,11 +43,14 @@ class BaseMixin:
         """
 
         obj = cls()
-        for col in obj.all_columns():
+        table = obj.all_columns()
+        for col in  table.c :
             col_name = col.name
-            print("colName : "+col_name)
             if col_name in kwargs:
+                print("colname : "+col_name)
+                # 테이벌.컬럼 = value
                 setattr(obj,col_name,kwargs.get(col_name))
+
         session.add(obj)
         session.flush()
         if auto_commit :
@@ -77,8 +80,7 @@ class BaseMixin:
     @classmethod
     def getCount(cls,session :Session = None, **kwargs):
         session = next(db.session()) if not session else session
-        #query = session.query(cls)
-        count = session.execute(text("select count(*) from docker.`user`"))
+        count = session.execute(text("select count(1) from docker.`user`"))
         return count.first()
 
     @classmethod
