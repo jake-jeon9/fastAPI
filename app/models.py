@@ -26,7 +26,7 @@ class Token(BaseModel) :
     Authorization : str =None
 
 class UserToken(BaseModel) :
-    id : int
+    ID : int
     pw : str =None
     email : str = None
     phone : str = None
