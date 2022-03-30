@@ -59,33 +59,38 @@ async def register(sns_type : SnsType,reg_info : UserRegister,session : Session 
         intCnt = int(strCnt)+1
 
         #pw 헤시
-        hash_pw = bcrypt.hashpw(reg_info.pw.encode("utf-8"),bcrypt.gensalt())
+        hash_pw = bcrypt.hashpw(reg_info.pw.encode("utf-8"),bcrypt.gensalt()).decode()
+        # decode를 하지 않을 경우 로그인시 checkpw 에서 db에서 호출한 값이 byte 타입이 아닌 str 타입이여서 ValueError : Invalid salt 발생함
 
         #생성
         new_user = Users.create(session,auto_commit=True, pw=str(hash_pw), email=reg_info.email, ID=intCnt)
 
         #토큰, pw 제외
         token = dict(Authorization = f"Bearer{create_access_token(data=UserToken.from_orm(new_user).dict(exclude={'pw'}),)}")
-
         return token
+
     return JSONResponse(status_code=400,content=dict(mst="NOT_SUPPORTED"))
 
 
 @router.post("/login/{sns_type}",status_code=200)
 async def login(sns_type: SnsType,user_info : UserRegister):
     if sns_type == SnsType.email :
-        is_exist = await is_email_exist(user_info.email)
+        is_exist = is_email_exist(user_info.email)
         if not user_info.email or not user_info.pw :
             return JSONResponse(status_code=400, content=dict(msg="Email and pw must be provided"))
         if not is_exist:
             return JSONResponse(status_code=400, content=dict(msg="NO_MATCH_USER"))
         user = Users.get(email=user_info.email)
-        is_verified = bcrypt.checkpw(user_info.pw.encode("utf-8"),user.pw.encode("utf-8"))
+
+        is_verified = bcrypt.checkpw(user_info.pw.encode("utf-8"), bytes(user.pw,"utf-8"))
         if not is_verified :
-            return JSONResponse(status_code=400,content=dict(msg = "NO_MATCH_USER"))
+            return JSONResponse(status_code=400,content=dict(result = "Fail", msg = "NO_MATCH_USER"))
         token = dict(
-            Authorization=f"Bearer{create_access_token(data=UserToken.from_orm(user).dict(exclude={'pw'}), )}")
+            result = "Success",
+            Authorization=f"Bearer{create_access_token(data=UserToken.from_orm(user).dict(exclude={'pw'}), )}"
+        )
         return token
+
     return JSONResponse(status_code=400, content=dict(mst="NOT_SUPPORTED"))
 
 def is_email_exist(email : str):
