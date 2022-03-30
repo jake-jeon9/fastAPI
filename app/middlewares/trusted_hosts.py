@@ -32,6 +32,7 @@ class TrustedHostMiddleware:
         self.except_path = list(except_path)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        print("It calls from trusted_hosts")
         if self.allow_any or scope["type"] not in ("http", "websocket",):  # pragma: no cover
             await self.app(scope, receive, send)
             return

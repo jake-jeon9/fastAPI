@@ -40,6 +40,7 @@ class AccessControl:
         request = Request(scope=scope)
         headers = Headers(scope=scope)
 
+        # sentry 로 500 오류를 잡을 수 있음.
         request.state.start = time.time()
         request.state.inspect = None
         request.state.user = None

@@ -18,14 +18,16 @@ class Config:
     MYSQL_PW = '1234'
     MYSQL_HOST = 'localhost'
     MYSQL_DB = 'docker'
+
+
     DB_URL : str = environ.get("DB_URL","mysql+pymysql://{user}:{pw}@{host}:3306/{db}".format(
         user=MYSQL_USER,pw=MYSQL_PW,host=MYSQL_HOST,db=MYSQL_DB))
 
 
 @dataclass
 class LocalConfig(Config):
-    #TRUSTED_HOSTS = ["*"]
-    #ALLOW_SITE = ["*"]
+    TRUSTED_HOSTS = ["*"]
+    ALLOW_SITE = ["*"]
     #DEBUG: bool = True
     PROJ_RELOAD : bool = True
     DB_URL: str = "mysql+pymysql://fastapi:user1234@localhost:3306/docker?charset=utf8mb4"
