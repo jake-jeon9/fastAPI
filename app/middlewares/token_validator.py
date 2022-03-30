@@ -17,7 +17,7 @@ from app.common import config, consts
 from app.common.config import conf
 from app.models import UserToken
 
-from app.utils.date_utils import D
+from app.util.date_utils import D
 
 
 class AccessControl:
