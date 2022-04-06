@@ -46,6 +46,7 @@ class AccessControl:
         request.state.user = None
         request.state.is_admin_access = None
         ip_from = request.headers["x-forwarded-for"] if "x-forwarded-for" in request.headers.keys() else None
+        #로드벨런서 아이피 적용
 
         if await self.url_pattern_check(request.url.path, self.except_path_regex) or request.url.path in self.except_path_list:
             return await self.app(scope, receive, send)

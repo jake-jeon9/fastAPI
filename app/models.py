@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import List,Optional
+from typing import List, Optional
 
 from pydantic import Field
 from pydantic.main import BaseModel
@@ -10,27 +10,39 @@ from pydantic import EmailStr, IPvAnyAddress
 
 class UserRegister(BaseModel):
     # pip install 'pydantic[email]'
-    email : EmailStr = None
+    email : str = None
     pw : str = None
 
-class SnsType (str,Enum): #Enum 은 1개만 선택
-    email : str = "email"
-    facebook : str = "facebook"
-    google : str = "google"
-    kakao : str ="kakao"
-    naver : str = "naver"
-    defalut : "None"
+class SnsType(str,Enum): #Enum 은 1개만 선택
+    email: str = "email"
+    facebook: str = "facebook"
+    google: str = "google"
+    kakao: str = "kakao"
+    naver: str = "naver"
+    default: str = "none"
 
 class Token(BaseModel) :
-    Authorization : str =None
+    Authorization: str = None
 
 class UserToken(BaseModel) :
-    ID : int
-    pw : str =None
-    email : str = None
-    phone : str = None
-    profile_img : str = None
-    sns_type : str = None
+    ID: int
+    pw: str = None
+    email: str = None
+    phone: str = None
+    profile_img: str = None
+    sns_type: str = None
 
-    class Config :
+    class Config:
+        orm_mode: bool = True
+
+
+class UserMe(BaseModel):
+    id:int
+    email:str = None
+    name:str = None
+    phone:str=None
+    profile_img:str=None
+    sns_type:str = None
+
+    class Config:
         orm_mode = True

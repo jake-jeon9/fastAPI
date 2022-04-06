@@ -78,7 +78,7 @@ class BaseMixin:
         return result
 
     @classmethod
-    def getCount(cls,session :Session = None, **kwargs):
+    def getCount(cls, session: Session = None, **kwargs):
         session = next(db.session()) if not session else session
         count = session.execute(text("select count(1) from docker.`user`"))
         return count.first()
@@ -119,11 +119,11 @@ class BaseMixin:
 class Users(Base,BaseMixin):
     print("테이블 진입")
     __tablename__ = "user"
-    ID = Column(String(length=255),primary_key=True)
+    ID = Column(String(length=255), primary_key=True)
     status = Column(Enum("active", "deleted", "blocked"), default="active")
     email = Column(String(length=30), nullable=True)
     pw = Column(String(length=200), nullable=True)
     name = Column(String(length=20), nullable=True)
     phone = Column(String(length=10), nullable=True, unique=True)
     profile_img = Column(String(length=200), nullable=True)
-    sns_type = Column(Enum("facebook", "google", "kakao","email","None"),nullable=True)
+    sns_type = Column(Enum("facebook", "google", "kakao", "email", "None", "naver"), nullable=True)
