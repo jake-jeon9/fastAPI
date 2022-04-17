@@ -27,7 +27,7 @@ from app.models import SnsType, Token, UserToken, UserRegister
  11. 탈퇴 회원 정보 저장 기간 동안 보유(법적 최대 한도차 내에서, 가입 때 약관 동의 받아야 함, 재가입 방지 용도로 사용하면 가능)
  """
 
-router = APIRouter()
+router = APIRouter(prefix="/auth")
 
 @router.post("/register/{sns_type}",status_code=200,response_model=Token)
 async def register(sns_type : SnsType,reg_info : UserRegister,session : Session = Depends(db.session)):
@@ -73,8 +73,8 @@ async def register(sns_type : SnsType,reg_info : UserRegister,session : Session 
 
 
 @router.post("/login/{sns_type}",status_code=200)
-async def login(sns_type: SnsType,user_info : UserRegister):
-    if sns_type == SnsType.email :
+async def login(sns_type: SnsType,user_info: UserRegister):
+    if sns_type == SnsType.email:
         is_exist = is_email_exist(user_info.email)
         if not user_info.email or not user_info.pw :
             return JSONResponse(status_code=400, content=dict(msg="Email and pw must be provided"))
@@ -83,11 +83,11 @@ async def login(sns_type: SnsType,user_info : UserRegister):
         user = Users.get(email=user_info.email)
 
         is_verified = bcrypt.checkpw(user_info.pw.encode("utf-8"), bytes(user.pw,"utf-8"))
-        if not is_verified :
+        if not is_verified:
             return JSONResponse(status_code=400,content=dict(result = "Fail", msg = "NO_MATCH_USER"))
         token = dict(
-            result = "Success",
-            Authorization=f"Bearer{create_access_token(data=UserToken.from_orm(user).dict(exclude={'pw'}), )}"
+            result="Success",
+            Authorization=f"Bearer {create_access_token(data=UserToken.from_orm(user).dict(exclude={'pw'}), )}"
         )
         return token
 

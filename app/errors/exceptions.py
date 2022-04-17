@@ -12,6 +12,7 @@ class APIException(Exception):
     code: str
     msg: str
     detail: str
+    ex : Exception
 
     def __init__(
         self,
@@ -26,9 +27,10 @@ class APIException(Exception):
         self.code = code
         self.msg = msg
         self.detail = detail
+        self.ex = ex
         super().__init__(ex)
 
-
+#에러 정의
 class NotFoundUserEx(APIException):
     def __init__(self, user_id: int = None, ex: Exception = None):
         super().__init__(
@@ -49,7 +51,6 @@ class NotAuthorized(APIException):
             code=f"{StatusCode.HTTP_401}{'1'.zfill(4)}",
             ex=ex,
         )
-
 
 class TokenExpiredEx(APIException):
     def __init__(self, ex: Exception = None):

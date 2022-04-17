@@ -3,6 +3,7 @@ from datetime import datetime
 from fastapi import APIRouter
 from starlette.responses import Response
 from starlette.requests import Request
+from inspect import currentframe as frame
 router = APIRouter()
 
 @router.get("/")
@@ -18,9 +19,14 @@ async def index():
 @router.get("/test")
 async def test(request:Request):
     """
-    ELB 상태 체크
+    ELB 상태 체크용 API
     :return
     """
     print("state.user",request.state.user)
-    current_time = datetime.utcnow();
+    try:
+        a=1/0
+    except Exception as e:
+        request.state.inspect = frame() #위치 기록
+        raise e
+    current_time = datetime.utcnow()
     return Response(f"Fast API (UTC : P{current_time.strftime('%Y.%m.%d %H:%M:%S')}")

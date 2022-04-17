@@ -2,6 +2,6 @@ JWT_SECRET = "ABCD1234!"
 JWT_ALGORITHM = "HS256"
 
 EXCEPT_PATH_LIST = ["/", "/openapi.json"]
-EXCEPT_PATH_REGEX = "^(/docs|/redoc|/auth)"
+EXCEPT_PATH_REGEX = "^(/docs|/redoc|/api/auth)"
 DEV_URL = "0.0.0.0"
 DEV_PORT = 8080

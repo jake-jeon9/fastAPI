@@ -16,5 +16,5 @@ async def get_user(request: Request):
     :return:
     """
     user = request.state.user
-    user_info = Users.get(id=user.id)
+    user_info = Users.get(ID=user.ID)
     return user_info
